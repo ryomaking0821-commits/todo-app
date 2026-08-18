@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日課・タスク ダッシュボード</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✅</text></svg>">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6e56e8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="login-screen" class="login-screen">
+  <div class="login-card">
+    <span class="brand-mark large">✅</span>
+    <h1>日課・タスク ダッシュボード</h1>
+    <p>Googleアカウントでログインすると、他の端末とデータを共有できます。</p>
+    <button type="button" id="login-btn" class="primary-btn">Googleでログイン</button>
+  </div>
+</div>
+
+<div id="app-shell" style="display:none;">
+
+<header class="app-header">
+  <div class="brand">
+    <span class="brand-mark">✅</span>
+    <h1>日課・タスク ダッシュボード</h1>
+  </div>
+  <div class="header-actions">
+    <span id="user-name" class="user-name"></span>
+    <button type="button" id="logout-btn" class="ghost-btn">ログアウト</button>
+    <button type="button" id="add-btn" class="primary-btn">+ 追加</button>
+  </div>
+</header>
+
+<main class="container">
+  <p id="today-banner" class="today-banner"></p>
+
+  <div class="progress-card">
+    <div class="progress-head">
+      <span>今日の達成率</span>
+      <span id="progress-percent">0%</span>
+    </div>
+    <div class="progress-track">
+      <div id="progress-fill" class="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div id="category-filter" class="category-filter"></div>
+
+  <div id="empty-state" class="empty-state" style="display:none;">
+    まだ項目がありません。「+ 追加」から日課やタスクを登録しましょう。
+  </div>
+
+  <section class="list-section">
+    <h2>今日やること <span class="count" id="pending-count">0</span></h2>
+    <ul id="pending-list" class="item-list"></ul>
+  </section>
+
+  <section class="list-section">
+    <h2>今日達成済み <span class="count" id="done-count">0</span></h2>
+    <ul id="done-list" class="item-list"></ul>
+  </section>
+
+  <section class="calendar-card">
+    <div class="calendar-head">
+      <button type="button" id="cal-prev" class="ghost-btn">‹ 前月</button>
+      <h2 id="cal-month-label"></h2>
+      <button type="button" id="cal-next" class="ghost-btn">翌月 ›</button>
+    </div>
+    <div class="calendar-weekdays">
+      <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
+    </div>
+    <div id="calendar-grid" class="calendar-grid"></div>
+    <div class="calendar-legend">
+      <span><span class="cal-dot full"></span>全日課達成</span>
+      <span><span class="cal-dot mid"></span>半分以上達成</span>
+      <span><span class="cal-dot low"></span>一部達成</span>
+      <span>✓N タスク完了数 ・ 📌N 未来の締切数 ・ 🪶 振り返りあり</span>
+    </div>
+  </section>
+
+  <section class="reflection-card">
+    <div class="reflection-head">
+      <h2>🪞 今日の振り返り</h2>
+      <button type="button" id="settings-toggle" class="ghost-btn">⚙ APIキー設定</button>
+    </div>
+
+    <div id="settings-panel" class="settings-panel" style="display:none;">
+      <label class="field">
+        OpenAI APIキー
+        <input type="password" id="api-key-input" placeholder="sk-...">
+      </label>
+      <p class="hint">⚠ このキーはこのブラウザのlocalStorageに平文で保存されます。この端末を他人と共有している場合は注意してください。個人利用のみを想定しています。</p>
+      <button type="button" id="save-key-btn" class="primary-btn small">保存</button>
+    </div>
+
+    <button type="button" id="generate-reflection-btn" class="primary-btn">今日の振り返りを生成</button>
+    <div id="reflection-output" class="reflection-output"></div>
+  </section>
+</main>
+
+<dialog id="item-dialog">
+  <form id="item-form" method="dialog">
+    <h2 id="dialog-title">追加</h2>
+
+    <fieldset class="type-select">
+      <label><input type="radio" name="type" value="routine" checked> 日課</label>
+      <label><input type="radio" name="type" value="task"> タスク</label>
+    </fieldset>
+
+    <label class="field">
+      タイトル
+      <input type="text" id="title-input" required>
+    </label>
+
+    <label class="field">
+      カテゴリ
+      <input type="text" id="category-input" list="category-list">
+      <datalist id="category-list"></datalist>
+    </label>
+
+    <label class="field">
+      タグ(カンマ区切り)
+      <input type="text" id="tags-input" placeholder="例: 健康, 朝">
+    </label>
+
+    <label class="field">
+      優先度
+      <select id="priority-input">
+        <option value="">なし</option>
+        <option value="low">低</option>
+        <option value="medium">中</option>
+        <option value="high">高</option>
+      </select>
+    </label>
+
+    <label class="field" id="due-date-field">
+      締切日
+      <input type="date" id="due-date-input">
+    </label>
+
+    <label class="field">
+      メモ
+      <textarea id="notes-input" rows="2"></textarea>
+    </label>
+
+    <div class="dialog-actions">
+      <button type="button" id="cancel-btn">キャンセル</button>
+      <button type="submit" class="primary-btn">保存</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="day-dialog">
+  <div class="day-detail">
+    <h2 id="day-detail-title"></h2>
+    <div id="day-detail-body"></div>
+    <div class="dialog-actions">
+      <button type="button" id="day-detail-close">閉じる</button>
+    </div>
+  </div>
+</dialog>
+
+</div>
+
+<script type="module" src="js/firebase-config.js"></script>
+<script src="js/dateUtils.js"></script>
+<script src="js/store.js"></script>
+<script src="js/render.js"></script>
+<script src="js/form.js"></script>
+<script src="js/journal.js"></script>
+<script src="js/calendar.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/main.js"></script>
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
+  }
+</script>
+</body>
+</html>
