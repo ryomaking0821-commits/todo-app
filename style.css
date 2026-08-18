@@ -22,6 +22,43 @@
   --shadow-md: 0 16px 36px rgba(91, 63, 214, 0.14);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #f1eef9;
+    --violet-700: #b8a4fb;
+    --violet-600: #9b7ef5;
+    --violet-500: #8b76f0;
+    --violet-100: #2a2247;
+    --violet-50: #201a38;
+    --green-600: #4ade80;
+    --green-100: #17301f;
+    --amber-600: #fbbf24;
+    --amber-100: #3a2c0f;
+    --red-600: #f87171;
+    --red-100: #3a1a17;
+    --orange-600: #fb923c;
+    --orange-100: #3a230f;
+    --surface: #1c1830;
+    --bg-alt: #121021;
+    --line: #322b4d;
+    --text: #ede9fe;
+    --text-muted: #a79fc4;
+    --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 16px 36px rgba(0, 0, 0, 0.5);
+  }
+
+  body {
+    background:
+      radial-gradient(circle at 10% -10%, rgba(155, 126, 245, 0.15), transparent 45%),
+      radial-gradient(circle at 100% 0%, rgba(74, 222, 128, 0.08), transparent 40%),
+      var(--bg-alt);
+  }
+
+  .app-header { background: rgba(28, 24, 48, 0.85); }
+  dialog#item-dialog::backdrop,
+  dialog#day-dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
+}
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 
@@ -220,6 +257,11 @@ body {
   padding: 10px 4px;
 }
 
+@keyframes itemIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .item-row {
   display: flex;
   align-items: center;
@@ -230,6 +272,7 @@ body {
   padding: 14px 16px;
   box-shadow: var(--shadow-sm);
   transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+  animation: itemIn 0.25s ease;
 }
 .item-row:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
 
@@ -325,19 +368,23 @@ body {
 }
 .dot.filled { background: linear-gradient(135deg, var(--green-600), #3fbf6d); }
 
-.item-actions { display: flex; gap: 6px; }
-.item-actions button {
+.item-actions { display: flex; gap: 4px; }
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
   border: 1px solid var(--line);
   background: var(--surface);
   color: var(--text-muted);
   border-radius: 8px;
-  padding: 5px 11px;
-  font-size: 0.76rem;
-  font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
 }
-.item-actions button:hover { border-color: var(--violet-500); color: var(--violet-700); background: var(--violet-50); }
+.icon-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.icon-btn.copy-btn:hover { border-color: var(--green-600); color: var(--green-600); background: var(--green-100); }
+.icon-btn.edit-btn:hover { border-color: var(--violet-500); color: var(--violet-700); background: var(--violet-50); }
+.icon-btn.delete-btn:hover { border-color: var(--red-600); color: var(--red-600); background: var(--red-100); }
 
 dialog#item-dialog {
   border: none;

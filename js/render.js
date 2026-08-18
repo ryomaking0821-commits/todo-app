@@ -62,9 +62,15 @@ const Render = (() => {
         </div>
         <div class="item-extra">${extra}</div>
         <div class="item-actions">
-          <button type="button" class="copy-btn" data-id="${item.id}">コピー</button>
-          <button type="button" class="edit-btn" data-id="${item.id}">編集</button>
-          <button type="button" class="delete-btn" data-id="${item.id}">削除</button>
+          <button type="button" class="icon-btn copy-btn" data-id="${item.id}" title="コピー" aria-label="コピー">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          </button>
+          <button type="button" class="icon-btn edit-btn" data-id="${item.id}" title="編集" aria-label="編集">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+          </button>
+          <button type="button" class="icon-btn delete-btn" data-id="${item.id}" title="削除" aria-label="削除">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
         </div>
       </li>
     `;
