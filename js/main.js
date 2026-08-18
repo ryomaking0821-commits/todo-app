@@ -37,9 +37,15 @@ const App = (() => {
   function onListClick(e) {
     const editBtn = e.target.closest(".edit-btn");
     const deleteBtn = e.target.closest(".delete-btn");
+    const copyBtn = e.target.closest(".copy-btn");
     if (editBtn) {
       const item = Store.getItems().find((i) => i.id === editBtn.dataset.id);
       if (item) FormUI.openForm(item);
+      return;
+    }
+    if (copyBtn) {
+      Store.duplicateItem(copyBtn.dataset.id);
+      refresh();
       return;
     }
     if (deleteBtn) {

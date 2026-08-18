@@ -116,6 +116,20 @@ const Store = (() => {
     persist();
   }
 
+  function duplicateItem(id) {
+    const item = state.items.find((i) => i.id === id);
+    if (!item) return;
+    return addItem({
+      type: item.type,
+      title: item.title,
+      category: item.category,
+      tags: item.tags,
+      priority: item.priority,
+      notes: item.notes,
+      dueDate: item.dueDate,
+    });
+  }
+
   function toggleToday(id) {
     const item = state.items.find((i) => i.id === id);
     if (!item) return;
@@ -160,6 +174,7 @@ const Store = (() => {
     addItem,
     updateItem,
     deleteItem,
+    duplicateItem,
     toggleToday,
     isDoneToday,
     getJournalEntry,

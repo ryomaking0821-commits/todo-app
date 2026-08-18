@@ -62,6 +62,7 @@ const Render = (() => {
         </div>
         <div class="item-extra">${extra}</div>
         <div class="item-actions">
+          <button type="button" class="copy-btn" data-id="${item.id}">コピー</button>
           <button type="button" class="edit-btn" data-id="${item.id}">編集</button>
           <button type="button" class="delete-btn" data-id="${item.id}">削除</button>
         </div>
