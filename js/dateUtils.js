@@ -47,6 +47,11 @@ const DateUtils = (() => {
     return `${y}年${m}月${d}日(${WEEKDAY_JA[dt.getDay()]})`;
   }
 
+  function weekdayOf(dateStr) {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    return new Date(y, m - 1, d).getDay();
+  }
+
   function daysUntil(dateStr, fromDateStr = todayStr()) {
     const [y1, m1, d1] = fromDateStr.split("-").map(Number);
     const [y2, m2, d2] = dateStr.split("-").map(Number);
@@ -62,5 +67,16 @@ const DateUtils = (() => {
     return `${-n}日超過`;
   }
 
-  return { formatDate, todayStr, addDays, lastNDates, calcStreak, formatJapaneseDate, daysUntil, dueLabel };
+  return {
+    formatDate,
+    todayStr,
+    addDays,
+    lastNDates,
+    calcStreak,
+    formatJapaneseDate,
+    daysUntil,
+    dueLabel,
+    weekdayOf,
+    WEEKDAY_JA,
+  };
 })();

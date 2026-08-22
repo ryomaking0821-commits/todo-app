@@ -40,6 +40,14 @@ const Render = (() => {
         `<span class="badge due ${urgency}">締切 ${escapeHtml(item.dueDate)}・${DateUtils.dueLabel(item.dueDate)}</span>`
       );
     }
+    if (item.type === "routine" && item.weekdays && item.weekdays.length > 0) {
+      const label = item.weekdays
+        .slice()
+        .sort()
+        .map((d) => DateUtils.WEEKDAY_JA[d])
+        .join("");
+      badges.push(`<span class="badge weekday">${label}</span>`);
+    }
     if (item.tags && item.tags.length) {
       badges.push(...item.tags.map((t) => `<span class="badge tag">#${escapeHtml(t)}</span>`));
     }

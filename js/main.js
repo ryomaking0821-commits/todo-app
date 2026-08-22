@@ -25,14 +25,14 @@ const App = (() => {
     return arr;
   }
 
-  function getFilteredItems() {
-    let items = Store.getItems();
-    if (activeCategory) items = items.filter((i) => i.category === activeCategory);
+  function getFilteredItems(items) {
+    let result = items;
+    if (activeCategory) result = result.filter((i) => i.category === activeCategory);
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
-      items = items.filter((i) => i.title.toLowerCase().includes(q));
+      result = result.filter((i) => i.title.toLowerCase().includes(q));
     }
-    return sortItems(items, sortMode);
+    return sortItems(result, sortMode);
   }
 
   function updateReflectionDisplay() {
@@ -42,14 +42,16 @@ const App = (() => {
   }
 
   function refresh() {
-    const items = Store.getItems();
+    const allItems = Store.getItems();
+    const todayStr = DateUtils.todayStr();
+    const todayItems = allItems.filter((i) => Store.isScheduledOn(i, todayStr));
     document.getElementById("today-banner").textContent = `📅 ${DateUtils.formatJapaneseDate()}`;
-    Render.renderProgress(items);
-    Render.renderCategoryFilter(items, activeCategory);
-    Render.renderList(getFilteredItems());
+    Render.renderProgress(todayItems);
+    Render.renderCategoryFilter(allItems, activeCategory);
+    Render.renderList(getFilteredItems(todayItems));
     Calendar.render();
     updateReflectionDisplay();
-    Notify.checkAndNotify(items);
+    Notify.checkAndNotify(todayItems);
   }
 
   function watchForDayChange() {
@@ -59,7 +61,8 @@ const App = (() => {
         currentDay = today;
         refresh();
       }
-      Notify.checkAndNotify(Store.getItems());
+      const todayStr = DateUtils.todayStr();
+      Notify.checkAndNotify(Store.getItems().filter((i) => Store.isScheduledOn(i, todayStr)));
     }, 60 * 1000);
   }
 

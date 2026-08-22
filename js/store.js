@@ -86,6 +86,7 @@ const Store = (() => {
     };
     if (item.type === "routine") {
       item.completions = {};
+      item.weekdays = data.weekdays && data.weekdays.length ? data.weekdays : [];
     } else {
       item.dueDate = data.dueDate || "";
       item.done = false;
@@ -107,6 +108,8 @@ const Store = (() => {
     item.notes = data.notes || "";
     if (item.type === "task") {
       item.dueDate = data.dueDate || "";
+    } else {
+      item.weekdays = data.weekdays && data.weekdays.length ? data.weekdays : [];
     }
     persist();
   }
@@ -127,7 +130,14 @@ const Store = (() => {
       priority: item.priority,
       notes: item.notes,
       dueDate: item.dueDate,
+      weekdays: item.weekdays,
     });
+  }
+
+  function isScheduledOn(item, dateStr) {
+    if (item.type !== "routine") return true;
+    if (!item.weekdays || item.weekdays.length === 0) return true;
+    return item.weekdays.includes(DateUtils.weekdayOf(dateStr));
   }
 
   function toggleToday(id) {
@@ -177,6 +187,7 @@ const Store = (() => {
     duplicateItem,
     toggleToday,
     isDoneToday,
+    isScheduledOn,
     getJournalEntry,
     saveJournalEntry,
   };

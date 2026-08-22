@@ -6,13 +6,14 @@ const FormUI = (() => {
     document.getElementById("item-form").addEventListener("submit", onSubmit);
     document.getElementById("cancel-btn").addEventListener("click", closeForm);
     document.querySelectorAll('input[name="type"]').forEach((el) =>
-      el.addEventListener("change", updateDueDateVisibility)
+      el.addEventListener("change", updateTypeFields)
     );
   }
 
-  function updateDueDateVisibility() {
+  function updateTypeFields() {
     const type = document.querySelector('input[name="type"]:checked').value;
     document.getElementById("due-date-field").style.display = type === "task" ? "flex" : "none";
+    document.getElementById("weekdays-field").style.display = type === "routine" ? "flex" : "none";
   }
 
   function populateCategoryList() {
@@ -45,8 +46,12 @@ const FormUI = (() => {
         : ""
       : (prefill && prefill.dueDate) || "";
 
+    document.querySelectorAll(".weekday-check").forEach((el) => {
+      el.checked = !!(item && item.weekdays && item.weekdays.includes(Number(el.value)));
+    });
+
     populateCategoryList();
-    updateDueDateVisibility();
+    updateTypeFields();
     dialog.showModal();
   }
 
@@ -73,6 +78,9 @@ const FormUI = (() => {
       priority: document.getElementById("priority-input").value,
       notes: document.getElementById("notes-input").value.trim(),
       dueDate: document.getElementById("due-date-input").value,
+      weekdays: Array.from(document.querySelectorAll(".weekday-check:checked")).map((el) =>
+        Number(el.value)
+      ),
     };
 
     if (editingId) {

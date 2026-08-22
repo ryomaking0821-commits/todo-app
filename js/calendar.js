@@ -9,10 +9,14 @@ const Calendar = (() => {
     return `${y}-${pad(m + 1)}-${pad(d)}`;
   }
 
-  function routineStatsForDate(items, dStr) {
-    const routines = items.filter(
-      (i) => i.type === "routine" && i.createdAt.slice(0, 10) <= dStr
+  function routinesForDate(items, dStr) {
+    return items.filter(
+      (i) => i.type === "routine" && i.createdAt.slice(0, 10) <= dStr && Store.isScheduledOn(i, dStr)
     );
+  }
+
+  function routineStatsForDate(items, dStr) {
+    const routines = routinesForDate(items, dStr);
     const done = routines.filter((i) => i.completions && i.completions[dStr]).length;
     return { done, total: routines.length };
   }
@@ -140,9 +144,7 @@ const Calendar = (() => {
       );
       parts.push(`<p class="day-empty">この日はまだ来ていないため、日課の達成状況はまだ記録されていません。</p>`);
     } else {
-      const routines = items.filter(
-        (i) => i.type === "routine" && i.createdAt.slice(0, 10) <= dStr
-      );
+      const routines = routinesForDate(items, dStr);
       const completedTasks = tasksCompletedOn(items, dStr);
 
       parts.push(`<h3>日課</h3>`);
