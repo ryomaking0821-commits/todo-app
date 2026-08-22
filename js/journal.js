@@ -31,6 +31,59 @@ const Journal = (() => {
       .join("\n");
   }
 
+  function buildWeeklySummary(items, weekDates) {
+    return weekDates
+      .map((dateStr) => {
+        const routines = items.filter(
+          (i) => i.type === "routine" && i.createdAt.slice(0, 10) <= dateStr && Store.isScheduledOn(i, dateStr)
+        );
+        const routineDone = routines.filter((r) => r.completions && r.completions[dateStr]).length;
+        const tasksDone = items.filter(
+          (i) => i.type === "task" && (i.completionDates || []).includes(dateStr)
+        ).length;
+        return `- ${DateUtils.formatJapaneseDate(dateStr)}: 日課${routineDone}/${routines.length}達成、タスク完了${tasksDone}件`;
+      })
+      .join("\n");
+  }
+
+  async function generateWeeklyReflection(items) {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      throw new Error("APIキーが未設定です。「⚙ APIキー設定」から登録してください。");
+    }
+    if (items.length === 0) {
+      throw new Error("まだ項目が登録されていません。");
+    }
+
+    const today = DateUtils.todayStr();
+    const weekDates = DateUtils.datesInWeek(today).filter((d) => d <= today);
+    const summary = buildWeeklySummary(items, weekDates);
+    const prompt = `以下は今週(月曜〜今日)の日課・タスクの達成状況です。\n\n${summary}\n\nこれを踏まえて、今週一週間を振り返る短い日本語の文章(200〜300文字程度)を書いてください。良かった点をねぎらい、達成率が低い日があれば責めずに優しく触れ、最後に来週への一言を添えてください。温かいトーンでお願いします。`;
+
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o-mini",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7,
+      }),
+    });
+
+    if (!res.ok) {
+      const errBody = await res.text();
+      throw new Error(`APIエラー (${res.status}): ${errBody.slice(0, 200)}`);
+    }
+
+    const data = await res.json();
+    const text = (data.choices && data.choices[0] && data.choices[0].message.content.trim()) || "";
+    Store.saveJournalEntry(DateUtils.weekKey(today), text);
+    return text;
+  }
+
   async function generateReflection(items) {
     const apiKey = getApiKey();
     if (!apiKey) {
@@ -67,5 +120,5 @@ const Journal = (() => {
     return text;
   }
 
-  return { getApiKey, setApiKey, getEntry, generateReflection };
+  return { getApiKey, setApiKey, getEntry, generateReflection, generateWeeklyReflection };
 })();

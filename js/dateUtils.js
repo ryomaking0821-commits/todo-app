@@ -67,6 +67,24 @@ const DateUtils = (() => {
     return `${-n}日超過`;
   }
 
+  function startOfWeek(dateStr) {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    const dt = new Date(y, m - 1, d);
+    const day = dt.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    dt.setDate(dt.getDate() + diff);
+    return formatDate(dt);
+  }
+
+  function datesInWeek(dateStr) {
+    const monday = startOfWeek(dateStr);
+    return Array.from({ length: 7 }, (_, i) => addDays(monday, i));
+  }
+
+  function weekKey(dateStr) {
+    return `week:${startOfWeek(dateStr)}`;
+  }
+
   return {
     formatDate,
     todayStr,
@@ -77,6 +95,9 @@ const DateUtils = (() => {
     daysUntil,
     dueLabel,
     weekdayOf,
+    startOfWeek,
+    datesInWeek,
+    weekKey,
     WEEKDAY_JA,
   };
 })();

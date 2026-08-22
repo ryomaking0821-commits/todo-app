@@ -63,6 +63,7 @@
   </div>
 
   <div id="category-filter" class="category-filter"></div>
+  <div id="tag-filter" class="category-filter"></div>
 
   <div id="empty-state" class="empty-state" style="display:none;">
     まだ項目がありません。「+ 追加」から日課やタスクを登録しましょう。
@@ -130,6 +131,28 @@
 
     <button type="button" id="generate-reflection-btn" class="primary-btn">今日の振り返りを生成</button>
     <div id="reflection-output" class="reflection-output"></div>
+  </section>
+
+  <section class="reflection-card">
+    <div class="reflection-head">
+      <h2>📅 今週の振り返り</h2>
+    </div>
+    <button type="button" id="generate-weekly-reflection-btn" class="primary-btn">今週の振り返りを生成</button>
+    <div id="weekly-reflection-output" class="reflection-output"></div>
+  </section>
+
+  <section class="reflection-card">
+    <div class="reflection-head">
+      <h2>💾 データのバックアップ</h2>
+    </div>
+    <div class="data-actions">
+      <button type="button" id="export-btn" class="ghost-btn">エクスポート(JSON保存)</button>
+      <label class="ghost-btn file-btn">
+        インポート(JSON読込)
+        <input type="file" id="import-input" accept="application/json" hidden>
+      </label>
+    </div>
+    <p class="hint">エクスポートすると今のデータをJSONファイルとしてダウンロードできます。インポートすると現在のデータは上書きされるのでご注意ください。</p>
   </section>
 </main>
 
@@ -207,6 +230,11 @@
     </div>
   </div>
 </dialog>
+
+<div id="undo-toast" class="undo-toast" style="display:none;">
+  <span id="undo-message"></span>
+  <button type="button" id="undo-btn">元に戻す</button>
+</div>
 
 </div>
 

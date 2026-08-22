@@ -21,6 +21,23 @@ const Render = (() => {
       .join("");
   }
 
+  function renderTagFilter(items, activeTag) {
+    const container = document.getElementById("tag-filter");
+    if (!container) return;
+    const tags = [...new Set(items.flatMap((i) => i.tags || []))].sort();
+    if (tags.length === 0) {
+      container.innerHTML = "";
+      return;
+    }
+    const chips = [{ label: "すべてのタグ", value: "" }, ...tags.map((t) => ({ label: `#${t}`, value: t }))];
+    container.innerHTML = chips
+      .map(({ label, value }) => {
+        const isActive = value === activeTag;
+        return `<button type="button" class="chip ${isActive ? "active" : ""}" data-tag="${escapeHtml(value)}">${escapeHtml(label)}</button>`;
+      })
+      .join("");
+  }
+
   function renderHistoryStrip(completions, days = 7) {
     const dates = DateUtils.lastNDates(days);
     return `<span class="history-strip">${dates
@@ -113,5 +130,5 @@ const Render = (() => {
     document.getElementById("done-count").textContent = done.length;
   }
 
-  return { renderList, renderCategoryFilter, renderProgress, escapeHtml };
+  return { renderList, renderCategoryFilter, renderTagFilter, renderProgress, escapeHtml };
 })();

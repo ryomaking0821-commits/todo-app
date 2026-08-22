@@ -115,7 +115,15 @@ const Store = (() => {
   }
 
   function deleteItem(id) {
+    const item = state.items.find((i) => i.id === id) || null;
     state.items = state.items.filter((i) => i.id !== id);
+    persist();
+    return item;
+  }
+
+  function restoreItem(item) {
+    if (!item) return;
+    state.items.push(item);
     persist();
   }
 
@@ -177,6 +185,23 @@ const Store = (() => {
     persist();
   }
 
+  function exportData() {
+    return JSON.stringify(
+      { version: state.version, exportedAt: new Date().toISOString(), items: state.items, journal: state.journal },
+      null,
+      2
+    );
+  }
+
+  function importData(data) {
+    if (!data || !Array.isArray(data.items)) {
+      throw new Error("ファイルの形式が正しくありません。");
+    }
+    state.items = data.items;
+    state.journal = data.journal && typeof data.journal === "object" ? data.journal : {};
+    persist();
+  }
+
   return {
     startSync,
     stopSync,
@@ -184,11 +209,14 @@ const Store = (() => {
     addItem,
     updateItem,
     deleteItem,
+    restoreItem,
     duplicateItem,
     toggleToday,
     isDoneToday,
     isScheduledOn,
     getJournalEntry,
     saveJournalEntry,
+    exportData,
+    importData,
   };
 })();
