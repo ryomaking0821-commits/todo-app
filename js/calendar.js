@@ -70,6 +70,27 @@ const Calendar = (() => {
     }
 
     grid.innerHTML = cells.join("");
+    renderChart(items, daysInMonth, todayStr);
+  }
+
+  function renderChart(items, daysInMonth, todayStr) {
+    const container = document.getElementById("achievement-chart");
+    if (!container) return;
+
+    const bars = [];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dStr = dateStrOf(viewYear, viewMonth, d);
+      if (dStr > todayStr) {
+        bars.push(`<div class="chart-bar future" title="${d}日"></div>`);
+        continue;
+      }
+      const { done, total } = routineStatsForDate(items, dStr);
+      const pct = total === 0 ? 0 : Math.round((done / total) * 100);
+      bars.push(
+        `<div class="chart-bar" style="height:${Math.max(pct, 3)}%" title="${d}日: 達成率${pct}%"></div>`
+      );
+    }
+    container.innerHTML = bars.join("");
   }
 
   function shiftMonth(delta) {

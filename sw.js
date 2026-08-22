@@ -1,4 +1,4 @@
-const CACHE_NAME = "taskdash-shell-v1";
+const CACHE_NAME = "taskdash-shell-v2";
 const SHELL_FILES = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const SHELL_FILES = [
   "./js/form.js",
   "./js/journal.js",
   "./js/calendar.js",
+  "./js/notify.js",
   "./js/auth.js",
   "./js/firebase-config.js",
   "./js/main.js",

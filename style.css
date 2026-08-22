@@ -194,6 +194,35 @@ body {
 .primary-btn:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(110, 86, 232, 0.4); }
 .primary-btn:active { transform: translateY(0); }
 
+.toolbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.search-input {
+  flex: 1;
+  font: inherit;
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+}
+.sort-select {
+  font: inherit;
+  font-size: 0.82rem;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+}
+.search-input:focus, .sort-select:focus {
+  outline: none;
+  border-color: var(--violet-500);
+  box-shadow: 0 0 0 3px var(--violet-100);
+}
+
 .category-filter {
   display: flex;
   flex-wrap: wrap;
@@ -564,6 +593,30 @@ dialog#item-dialog::backdrop { background: rgba(32, 28, 51, 0.5); backdrop-filte
 .cal-task-mark { font-size: 0.62rem; font-weight: 700; color: var(--violet-700); }
 .cal-due-mark { font-size: 0.62rem; font-weight: 700; color: var(--orange-600); }
 .cal-journal-mark { font-size: 0.65rem; }
+
+.achievement-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 56px;
+  margin-top: 18px;
+  padding: 6px;
+  background: var(--bg-alt);
+  border-radius: 10px;
+}
+.chart-bar {
+  flex: 1;
+  min-height: 3px;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(180deg, var(--violet-500), var(--green-600));
+}
+.chart-bar.future { background: var(--line); opacity: 0.4; }
+.chart-caption {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 6px;
+}
 
 .calendar-legend {
   display: flex;

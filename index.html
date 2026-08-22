@@ -52,6 +52,16 @@
     </div>
   </div>
 
+  <div class="toolbar">
+    <input type="search" id="search-input" class="search-input" placeholder="🔍 タイトルで検索">
+    <select id="sort-select" class="sort-select">
+      <option value="created-desc">追加順(新しい順)</option>
+      <option value="priority">優先度順</option>
+      <option value="due">締切日順</option>
+      <option value="title">タイトル順</option>
+    </select>
+  </div>
+
   <div id="category-filter" class="category-filter"></div>
 
   <div id="empty-state" class="empty-state" style="display:none;">
@@ -78,12 +88,29 @@
       <span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span>
     </div>
     <div id="calendar-grid" class="calendar-grid"></div>
+    <div id="achievement-chart" class="achievement-chart"></div>
+    <p class="chart-caption">今月の日課 達成率の推移</p>
     <div class="calendar-legend">
       <span><span class="cal-dot full"></span>全日課達成</span>
       <span><span class="cal-dot mid"></span>半分以上達成</span>
       <span><span class="cal-dot low"></span>一部達成</span>
       <span>✓N タスク完了数 ・ 📌N 未来の締切数 ・ 🪶 振り返りあり</span>
     </div>
+  </section>
+
+  <section class="reflection-card">
+    <div class="reflection-head">
+      <h2>🔔 リマインダー</h2>
+    </div>
+    <div class="settings-panel" style="display:flex;">
+      <label class="field">
+        通知時刻
+        <input type="time" id="reminder-time-input">
+      </label>
+      <p class="hint" id="reminder-status"></p>
+      <button type="button" id="enable-notify-btn" class="primary-btn small">通知を有効にする</button>
+    </div>
+    <p class="hint">※ この端末のブラウザでアプリを開いている(またはホーム画面に追加している)ときのみ通知されます。指定時刻を過ぎても未達成の項目があれば、1日1回通知します。</p>
   </section>
 
   <section class="reflection-card">
@@ -177,6 +204,7 @@
 <script src="js/form.js"></script>
 <script src="js/journal.js"></script>
 <script src="js/calendar.js"></script>
+<script src="js/notify.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/main.js"></script>
 <script>

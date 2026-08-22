@@ -1,11 +1,38 @@
 const App = (() => {
   let activeCategory = "";
+  let searchQuery = "";
+  let sortMode = "created-desc";
   let currentDay = DateUtils.todayStr();
 
+  function sortItems(items, mode) {
+    const arr = items.slice();
+    switch (mode) {
+      case "priority": {
+        const order = { high: 0, medium: 1, low: 2, "": 3 };
+        arr.sort((a, b) => (order[a.priority] ?? 3) - (order[b.priority] ?? 3));
+        break;
+      }
+      case "due":
+        arr.sort((a, b) => (a.dueDate || "9999-99-99").localeCompare(b.dueDate || "9999-99-99"));
+        break;
+      case "title":
+        arr.sort((a, b) => a.title.localeCompare(b.title, "ja"));
+        break;
+      case "created-desc":
+      default:
+        arr.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    }
+    return arr;
+  }
+
   function getFilteredItems() {
-    const items = Store.getItems();
-    if (!activeCategory) return items;
-    return items.filter((i) => i.category === activeCategory);
+    let items = Store.getItems();
+    if (activeCategory) items = items.filter((i) => i.category === activeCategory);
+    if (searchQuery) {
+      const q = searchQuery.toLowerCase();
+      items = items.filter((i) => i.title.toLowerCase().includes(q));
+    }
+    return sortItems(items, sortMode);
   }
 
   function updateReflectionDisplay() {
@@ -22,6 +49,7 @@ const App = (() => {
     Render.renderList(getFilteredItems());
     Calendar.render();
     updateReflectionDisplay();
+    Notify.checkAndNotify(items);
   }
 
   function watchForDayChange() {
@@ -31,6 +59,7 @@ const App = (() => {
         currentDay = today;
         refresh();
       }
+      Notify.checkAndNotify(Store.getItems());
     }, 60 * 1000);
   }
 
@@ -68,6 +97,44 @@ const App = (() => {
     if (!chip) return;
     activeCategory = chip.dataset.category;
     refresh();
+  }
+
+  function initToolbar() {
+    document.getElementById("search-input").addEventListener("input", (e) => {
+      searchQuery = e.target.value.trim();
+      refresh();
+    });
+    document.getElementById("sort-select").addEventListener("change", (e) => {
+      sortMode = e.target.value;
+      refresh();
+    });
+  }
+
+  function initNotify() {
+    const timeInput = document.getElementById("reminder-time-input");
+    timeInput.value = Notify.getReminderTime();
+    timeInput.addEventListener("change", () => Notify.setReminderTime(timeInput.value));
+
+    const statusEl = document.getElementById("reminder-status");
+    function updateStatus() {
+      if (!Notify.isSupported()) {
+        statusEl.textContent = "この端末はブラウザ通知に対応していません。";
+        return;
+      }
+      const p = Notify.permission();
+      statusEl.textContent =
+        p === "granted"
+          ? "✅ 通知は有効です。"
+          : p === "denied"
+          ? "⚠ 通知がブロックされています。ブラウザの設定から許可してください。"
+          : "通知はまだ許可されていません。";
+    }
+    updateStatus();
+
+    document.getElementById("enable-notify-btn").addEventListener("click", async () => {
+      await Notify.requestPermission();
+      updateStatus();
+    });
   }
 
   function initReflection() {
@@ -111,6 +178,8 @@ const App = (() => {
     document.getElementById("pending-list").addEventListener("change", onListChange);
     document.getElementById("done-list").addEventListener("change", onListChange);
     document.getElementById("category-filter").addEventListener("click", onCategoryClick);
+    initToolbar();
+    initNotify();
     initReflection();
     Calendar.init();
     Auth.init();
