@@ -148,6 +148,13 @@ const Store = (() => {
     return item.weekdays.includes(DateUtils.weekdayOf(dateStr));
   }
 
+  function isCountedOn(item, dateStr) {
+    if (item.type === "routine") return isScheduledOn(item, dateStr);
+    if (!item.done) return true;
+    const completedDate = item.completedAt ? item.completedAt.slice(0, 10) : null;
+    return completedDate === dateStr;
+  }
+
   function toggleToday(id) {
     const item = state.items.find((i) => i.id === id);
     if (!item) return;
@@ -214,6 +221,7 @@ const Store = (() => {
     toggleToday,
     isDoneToday,
     isScheduledOn,
+    isCountedOn,
     getJournalEntry,
     saveJournalEntry,
     exportData,

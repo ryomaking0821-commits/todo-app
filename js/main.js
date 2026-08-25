@@ -52,7 +52,7 @@ const App = (() => {
   function refresh() {
     const allItems = Store.getItems();
     const todayStr = DateUtils.todayStr();
-    const todayItems = allItems.filter((i) => Store.isScheduledOn(i, todayStr));
+    const todayItems = allItems.filter((i) => Store.isCountedOn(i, todayStr));
     document.getElementById("today-banner").textContent = `📅 ${DateUtils.formatJapaneseDate()}`;
     Render.renderProgress(todayItems);
     Render.renderCategoryFilter(allItems, activeCategory);
@@ -71,7 +71,7 @@ const App = (() => {
         refresh();
       }
       const todayStr = DateUtils.todayStr();
-      Notify.checkAndNotify(Store.getItems().filter((i) => Store.isScheduledOn(i, todayStr)));
+      Notify.checkAndNotify(Store.getItems().filter((i) => Store.isCountedOn(i, todayStr)));
     }, 60 * 1000);
   }
 
